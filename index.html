@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>jQuery-ajax</title>
+<style type="text/css">
+li {
+	list-style: none;
+    height:40px;
+    line-height:40px;
+    font-size: 18px;
+    border:1px solid pink;
+    border-radius: 3px;
+    margin:5px;
+    cursor: pointer;
+}
+li:hover{
+    background: green;
+}
+a { 
+	width:100px;
+    height:40px;
+    line-height:40px;
+    font-size: 16px;
+    border:1px solid pink;
+    border-radius: 3px;
+    margin:0 auto;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color:pink;
+}
+</style>
+</head>
+<body>
+<ul  id="ct">
+    <li>新闻</li>
+    <li>新闻</li>
+</ul>
+ <a href="#" class="btn">加载更多</a>
+ <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+<script>
+	var $btn = $(".btn");
+	var $ct = $("#ct")
+    var idx = 0;
+    var judgeData = true; //点击之后数据到来之前设置judgeDate为false，防止重复点击
+	$btn.on("click",function(e){
+        if(!judgeData){
+        	return;
+        }
+        judgeData = false;
+		e.preventDefault();
+        $.ajax({
+            url: '/loadMore',
+            method: 'GET',
+            dataType:'json',
+             data: {
+            index : idx,
+            length: 5
+                }
+        }).done(function(news){
+            console.log(news)
+            for(var i=0;i<news.length;i++){
+                $ct.append(appendHtml(news[i]))
+            }
+        }).error(function(){
+            alert('出错了！')
+        })
+
+        idx += 5;
+        judgeData = true;
+    })
+    function appendHtml(news){
+        var html = '<li>' + news + '</li>'
+        return html;
+    }
+		/*var xhr = new XMLHttpRequest();
+		xhr.onreadystatechange = function(){
+			if(xhr.readyState === 4 ){
+				if(xhr.status ===200||xhr.status ===304){
+					var results = JSON.parse(xhr.responseText)
+ 					var fragments = document.createDocumentFragment()
+ 					for(let i = 0;i < 5; i++){
+ 						var node = document.createElement("li")
+ 						node.innerText = results[i]
+ 						fragments.appendChild(node);
+ 					}
+ 				ct.appendChild(fragments)
+ 				index += 5;
+ 				}else{
+ 					console.log("出错了")
+ 				}
+ 				judgeData = true;
+			}
+		}
+        xhr.open("get","/loadMore?index=" + index + "&length=5" ,true)
+        xhr.send();
+	})*/
+</script>
+</body>
+</html>
